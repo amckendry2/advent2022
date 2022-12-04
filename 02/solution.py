@@ -1,19 +1,23 @@
 import sys
-import functools
 
-aGroup = ['A', 'B', 'C']
-bGroup = ['X', 'Y', 'Z']
+trans = { 'A': 'X', 'B': 'Y', 'C': 'Z' }
+def idx(c): ord(c) - 'X'
 
-getMine = {
-  'X': lambda a: bGroup[(aGroup.index(a) - 1) % 3],
-  'Y': lambda a: bGroup[aGroup.index(a)],
-  'Z': lambda a: bGroup[(aGroup.index(a) + 1) % 3]
-}
+def beatBy(a): return trans[(idx(a) + 1 % 3)]
+def losesTo(a): return trans[(idx(a) - 1 % 3)]
 
-beatBy = lambda a, b: (aGroup.index(a) + 1) % 3 == bGroup.index(b)
-equals = lambda a, b: aGroup.index(a) == bGroup.index(b)
-scoreRound = lambda a, b : (6 if beatBy(a, b) else 0) + (3 if equals(a, b) else 0) + bGroup.index(b) + 1 
+def scoreRound(a, b): 
+  return (
+    6 if beatBy(a) == b 
+    else 3 if trans[a] == b 
+    else 0
+  ) + idx(trans[b]) + 1 
 
-lines = [line.strip().split() for line in sys.stdin.readlines()]
-print(f'Part 1: {functools.reduce(lambda a, b: a + scoreRound(*b), lines, 0)}')
-print(f'Part 2: {functools.reduce(lambda a, b: a + scoreRound(b[0], getMine[b[1]](b[0])), lines, 0)}')
+def getMine(a, b):
+  if b == 'X': return losesTo(a) 
+  if b == 'Y': return trans[a]
+  if b == 'Z': return beatBy(a)
+
+lines = [l.strip().split() for l in sys.stdin.readlines()]
+print(f'Part 1: {sum([scoreRound(*l) for l in lines])}')
+print(f'Part 2: {sum([scoreRound(l[0], getMine(*l)) for l in lines])}')
