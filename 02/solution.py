@@ -1,21 +1,21 @@
 import sys
 
-trans = { 'A': 'X', 'B': 'Y', 'C': 'Z' }
-def idx(c): ord(c) - 'X'
+chars = ['X', 'Y', 'Z']
+def idx(c): return ord(c) - ord('A')
 
-def beatBy(a): return trans[(idx(a) + 1 % 3)]
-def losesTo(a): return trans[(idx(a) - 1 % 3)]
+def beatBy(a): return chars[(idx(a) + 1) % 3]
+def losesTo(a): return chars[(idx(a) - 1) % 3]
 
 def scoreRound(a, b): 
   return (
     6 if beatBy(a) == b 
-    else 3 if trans[a] == b 
+    else 3 if chars[idx(a)] == b 
     else 0
-  ) + idx(trans[b]) + 1 
+  ) + chars.index(b) + 1 
 
 def getMine(a, b):
   if b == 'X': return losesTo(a) 
-  if b == 'Y': return trans[a]
+  if b == 'Y': return chars[idx(a)]
   if b == 'Z': return beatBy(a)
 
 lines = [l.strip().split() for l in sys.stdin.readlines()]
