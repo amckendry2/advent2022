@@ -1,10 +1,9 @@
 import sys
 import math
 
-snek1 = [[0,0],[0,0]]
+snek1, snek2 = [[0,0],[0,0]]
 snek2 = [[0,0] for _ in range(10)]
-log1 = []
-log2 = []
+log1, log2 = [],[]
 
 def rideTheSnek(cmd, snk, log): 
   if  (cmd[0] == 'R'): snk[0][0] += 1
