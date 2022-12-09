@@ -6,14 +6,11 @@ snek2 = [[0,0] for _ in range(10)]
 log1 = []
 log2 = []
 
-def doCommand(c, seg):
-  if(c == 'R'): seg[0] += 1
-  if(c == 'L'): seg[0] -= 1
-  if(c == 'U'): seg[1] += 1
-  if(c == 'D'): seg[1] -= 1
-
 def rideTheSnek(cmd, snk, log): 
-  doCommand(cmd, snk[0])
+  if  (cmd[0] == 'R'): snk[0][0] += 1
+  elif(cmd[0] == 'L'): snk[0][0] -= 1
+  elif(cmd[0] == 'U'): snk[0][1] += 1
+  elif(cmd[0] == 'D'): snk[0][1] -= 1
   for i in (range(l := len(snk) - 1)): 
     if any(abs((h := snk[i])[n] - (t := snk[i + 1])[n]) > 1 for n in [0, 1]):
       for i in [0, 1]: t[i] += (math.copysign(1, d) if (d := h[i] - t[i]) != 0 else 0)
