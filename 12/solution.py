@@ -38,10 +38,9 @@ def shortestPath(start, end):
 width = (first := sys.stdin.readline()).index('\n')
 spaceVals = [ord(c) for c in (first + sys.stdin.read()) if c != '\n']
 gScore = [math.inf for _ in range(len(spaceVals))]
-p1StartIdx = spaceVals.index(ord('S'))
-spaceVals[p1StartIdx] = ord('a')
-endIdx = spaceVals.index(ord('E'))
-spaceVals[endIdx] = ord('z')
+spaceVals[(p1StartIdx := spaceVals.index(ord('S')))] = ord('a')
+spaceVals[(endIdx := spaceVals.index(ord('E')))] = ord('z')
 
 print(f'Part 1: {shortestPath(p1StartIdx, endIdx)}')
-print(sorted(shortestPath(idx, endIdx) for idx, val in enumerate(spaceVals) if val == ord('a'))[0])
+shortest = sorted(shortestPath(idx, endIdx) for idx, val in enumerate(spaceVals) if val == ord('a'))[0]
+print(f'Part 2: {shortest}')
