@@ -1,6 +1,8 @@
 import sys
 import re
 from functools import reduce
+from dataclasses import dataclass
+from typing import Callable
 
 jungle = []
 
@@ -12,14 +14,14 @@ class Item:
     self.mods = {k: (func(v) % k) for k,v in self.mods.items()}
     self.basicVal = func(self.basicVal) // 3
 
+@dataclass
 class Monkey:
-  def __init__(self, items, op, right, testMod, choices):
-    self.items = items
-    self.op = op
-    self.right = right
-    self.testMod = testMod
-    self.choices = choices
-    self.inspections = 0
+  items: list
+  op: Callable
+  right: str
+  testMod: int
+  choices: list
+  inspections: int = 0
 
   def doTurn(self, isPart1):
     for i in self.items:
@@ -30,8 +32,8 @@ class Monkey:
     self.items = []
   
 lines = sys.stdin.readlines()
-monkeys = [lines[i-7:i-1] for i in range(7, len(lines) + 2, 7)]
 mods = [int(i) for i in re.findall('divisible by (\d+)', ''.join(lines))]
+monkeys = [lines[i-7:i-1] for i in range(7, len(lines) + 2, 7)]
 
 def resetJungle():
   jungle.clear()
@@ -42,11 +44,12 @@ def resetJungle():
     op = (lambda l, r: l + r) if sym[1] == '+' else (lambda l, r: l * r)
     jungle.append(Monkey(items, op, sym[2], nums[0], [nums[2], nums[1]]))
 
+#main
 resetJungle()
-for i in range(20): for m in jungle:  m.doTurn(True)
-print(reduce(lambda a, b: a * b, sorted(m.inspections for m in jungle)[-2:]))
+for _ in range(20): 
+  for m in jungle: m.doTurn(True)
+print(f'Part 1: {reduce(lambda a, b: a * b, sorted(m.inspections for m in jungle)[-2:])}')
 resetJungle()
-for i in range(10000):
-  for m in jungle:
-    m.doTurn(False)
-print(reduce(lambda a, b: a * b, sorted(m.inspections for m in jungle)[-2:]))
+for _ in range(10000):
+  for m in jungle: m.doTurn(False)
+print(f'Part 2: {reduce(lambda a, b: a * b, sorted(m.inspections for m in jungle)[-2:])}')
