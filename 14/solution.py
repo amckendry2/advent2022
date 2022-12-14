@@ -1,12 +1,23 @@
 import sys
 import re
+from math import copysign
 
-grains = []
+grainTable = {} 
+wallTable = {} 
+bottom = 0
 
-input = sys.stdin.readlines()
-vertices = [[[int(v) for v in pair] for pair in re.findall('(\d+),(\d+)', l)] for l in input]
-pairs = [(v[i], v[i + 1]) for v in vertices for i in range(len(v) - 1)]
-bottom = max(v[1] for grp in vertices for v in grp)
+def bump(x, y, tbl):
+  if x in tbl: tbl[x].append(y)
+  else: tbl[x] = [y]
+
+def lookup(x, y, tbl): return x in tbl and y in tbl[x]
+
+def getPtRange(a, b):
+  dir = int(copysign(1, b - a))
+  return range(a, b + dir, dir)
+
+def getPoints(x1, y1, x2, y2):
+  return [(x, y) for x in getPtRange(x1, x2) for y in getPtRange(y1, y2)] 
 
 def isMid(l, m, r): 
   if l < r: 
@@ -15,12 +26,7 @@ def isMid(l, m, r):
 
 def testIntersect(x, y, part2):
   if part2 and y >= bottom + 2: return True  
-  for g in grains:
-    if(g[0] == x and g[1] == y): return True
-  for p in pairs:
-    if p[0][0] == x and isMid(p[0][1], y, p[1][1]): return True
-    if p[0][1] == y and isMid(p[0][0], x, p[1][0]): return True
-  return False
+  return lookup(x, y, grainTable) or lookup(x, y, wallTable)
 
 def getNextSpace(x, y, part2):
   if not part2 and y == bottom: return None
@@ -30,18 +36,25 @@ def getNextSpace(x, y, part2):
   return None
 
 def simulate(part2):
+  startStack = [(500, 0)]
   while(True):
-    print(len(grains))
-    curGrain = (500, 0)
+    curGrain = startStack.pop()
     while(nxt := getNextSpace(*curGrain, part2)):
+      startStack.append(curGrain)
       curGrain = nxt
     if not part2 and curGrain[1] == bottom: break
     if curGrain[1] == 0: break
-    grains.append(curGrain)
+    bump(*curGrain, grainTable)
 
-simulate(False)
-print(len(grains))
-# grains.clear()
-# simulate(True)
-# print(len(grains) + 1)
+input = sys.stdin.readlines()
+lines = [[[int(v) for v in pair] for pair in re.findall('(\d+),(\d+)', l)] for l in input]
+nestedPoints = [getPoints(*v[i], *v[i + 1]) for v in lines for i in range(len(v) - 1)]
+for p in [p for n in nestedPoints for p in n]:
+  bottom = max(p[1], bottom)
+  bump(*p, wallTable)
 
+simulate(part2 = False)
+print(sum(len(y) for _,y in grainTable.items()))
+grainTable.clear()
+simulate(part2 = True)
+print(sum(len(y) for _,y in grainTable.items()))
