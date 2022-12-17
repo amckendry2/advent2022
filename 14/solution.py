@@ -5,6 +5,8 @@ from math import copysign
 grainTable = {} 
 wallTable = {} 
 bottom = 0
+leftmost = 10000
+rightmost = 0
 
 def bump(x, y, tbl):
   if x in tbl: tbl[x].append(y)
@@ -51,10 +53,13 @@ lines = [[[int(v) for v in pair] for pair in re.findall('(\d+),(\d+)', l)] for l
 nestedPoints = [getPoints(*v[i], *v[i + 1]) for v in lines for i in range(len(v) - 1)]
 for p in [p for n in nestedPoints for p in n]:
   bottom = max(p[1], bottom)
+  leftmost = min(leftmost, p[0])
+  rightmost = max(rightmost, p[0])
   bump(*p, wallTable)
 
 simulate(part2 = False)
-print(sum(len(y) for _,y in grainTable.items()))
+print('Part1:', sum(len(y) for _,y in grainTable.items()))
+
 grainTable.clear()
 simulate(part2 = True)
-print(sum(len(y) for _,y in grainTable.items()))
+print('Part1:', sum(len(y) for _,y in grainTable.items()))
